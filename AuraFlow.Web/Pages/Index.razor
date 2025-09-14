@@ -1,0 +1,66 @@
+﻿@page "/"
+@using AuraFlow.WebUI.Models
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+<h1 class="text-3xl font-bold text-center my-8 text-slate-800">AuraFlow</h1>
+<p class="text-center text-slate-600 mb-12">Feel your emotions. See them dance.</p>
+
+<div class="max-w-2xl mx-auto space-y-8 p-6 bg-white rounded-xl shadow-lg">
+    @for (int i = 0; i < Emotions.Length; i++)
+    {
+        var currentIndex = i; 
+        <div class="flex flex-col gap-2">
+            <label class="emotion-label">@Emotions[currentIndex]</label>
+            <input type="range" min="0" max="100" value="@EmotionValues[currentIndex]"
+                class="emotion-slider" 
+                @oninput="@(e => UpdateValue(currentIndex, int.Parse(e.Value.ToString())))" />
+            <span class="text-sm text-slate-500">@EmotionValues[currentIndex]%</span>
+        </div>
+    }
+
+    <button class="mt-8 w-full py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition"
+            @onclick="GenerateAura">
+        Generate
+    </button>
+
+    @if (!string.IsNullOrEmpty(AuraUrl))
+    {
+        <div class="mt-6 p-4 bg-slate-50 rounded-lg">
+            <p class="text-sm">Your aura is ready:</p>
+            <a href="@AuraUrl" target="_blank" class="text-blue-600 underline">@AuraUrl</a>
+        </div>
+    }
+</div>
+
+@code {
+    private string[] Emotions = { "Joy", "Sadness", "Calm", "Anxiety", "Inspiration" };
+    private int[] EmotionValues = new int[5] { 50, 30, 70, 20, 60 };
+    private string AuraUrl = "";
+
+    private void UpdateValue(int index, int value)
+    {
+        EmotionValues[index] = value;
+    }
+
+    private async Task GenerateAura()
+    {
+        var payload = new
+        {
+            Joy = EmotionValues[0],
+            Sadness = EmotionValues[1],
+            Calm = EmotionValues[2],
+            Anxiety = EmotionValues[3],
+            Inspiration = EmotionValues[4]
+        };
+
+        var response = await Http.PostAsJsonAsync("https://localhost:32769/api/Emotions", payload);
+
+        if (response.IsSuccessStatusCode)
+        {
+            //Выводится пустая страница, куда можно что-то добавить
+            var result = await response.Content.ReadFromJsonAsync<EmotionResponse>();
+            AuraUrl = $"https://auraflow.io/aura/{result.Id}";
+        }
+    }
+}

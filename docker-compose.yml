@@ -1,0 +1,6 @@
+services:
+  auraflow.backend:
+    image: ${DOCKER_REGISTRY-}auraflowbackend
+    build:
+      context: .
+      dockerfile: AuraFlow.Backend/Dockerfile
