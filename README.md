@@ -55,8 +55,3 @@
 | **Другое** | Чистая архитектура (разделение на Domain, Application, Infrastructure, WebUI) |
 
 ---
-
-## 👨‍💻 Автор
-
-Omyy 
-[GitHub](https://github.com/Omasy4S) | [LinkedIn](https://linkedin.com/in/omasy4s)  
